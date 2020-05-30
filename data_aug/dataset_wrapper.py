@@ -44,7 +44,7 @@ class DataSetWrapper(object):
         return data_transforms
 
     def get_test_data_loaders(self, test_dataset):
-        test_loader = DataLoader(train_dataset, batch_size=self.batch_size,num_workers=self.num_workers, drop_last=True, shuffle=False)
+        test_loader = DataLoader(test_dataset, batch_size=self.batch_size,num_workers=self.num_workers, drop_last=True, shuffle=False)
         return test_loader
 
     def get_train_validation_data_loaders(self, train_dataset):
