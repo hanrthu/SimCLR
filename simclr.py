@@ -86,8 +86,8 @@ class SimCLR(object):
         zis = F.normalize(zis, dim=1)
         zjs = F.normalize(zjs, dim=1)
 
-        correct1,correct5,correct10,correct20 = self.nt_xent_criterion.top_eval(zis,zjs)
-        return correct1,correct5,correct10,correct20
+        correct1,correct5,correct10,correct20,correct50,correct100 = self.nt_xent_criterion.top_eval(zis,zjs)
+        return correct1,correct5,correct10,correct20,correct50,correct100
         
     def test(self):
         train_loader, valid_loader, test_loader= self.dataset.get_data_loaders()
@@ -200,6 +200,8 @@ class SimCLR(object):
         top5 = 0.0
         top10 = 0.0
         top20 = 0.0
+        top50 = 0.0
+        top100 = 0.0
         total = 0.0
         counter = 0.0
 
@@ -209,12 +211,14 @@ class SimCLR(object):
                 # print(batch_x.shape)
                 # print(batch_y.shape)
                 batch_x, batch_y = batch_x.to(self.device), batch_y.to(self.device)
-                tmp1,tmp5,tmp10,tmp20 = self.top_step(model,batch_x,batch_y,counter)
+                tmp1,tmp5,tmp10,tmp20,tmp50,tmp100 = self.top_step(model,batch_x,batch_y,counter)
 
                 top1 += tmp1
                 top5 += tmp5
                 top10 += tmp10
                 top20 += tmp20
+                top50 += tmp50
+                top100 += tmp100
 
                 total += 2 * batch_x.size(0)
                 counter += 1
@@ -223,6 +227,8 @@ class SimCLR(object):
         top5_acc = 100.0 * top5 / total
         top10_acc = 100.0 * top10 /total
         top20_acc = 100.0 * top20 / total
+        top50_acc = 100.0 * top50 / total
+        top100_acc = 100.0 * top100 / total
         print("Top1 Accuracy: %f %%" %(top1_acc))
         print("Top5 Accuracy: %f %%" %(top5_acc))
         print("Top10 Accuracy: %f %%" %(top10_acc))

@@ -85,10 +85,14 @@ class NTXentLoss(torch.nn.Module):
         _,predicted5 = logits.topk(5,1,True,True)
         _,predicted10 = logits.topk(10,1,True,True)
         _,predicted20 = logits.topk(20,1,True,True)
+        _,predicted50 = logits.topk(50,1,True,True)
+        _,predicte100 = logits.topk(100,1,True,True)
         correct1 = (predicted1 == labels).sum().item()
         labels = labels.view(-1,1)
         correct5 = torch.eq(predicted5, labels).sum().float().item()
         correct10 = torch.eq(predicted10, labels).sum().float().item()
         correct20 = torch.eq(predicted20, labels).sum().float().item()
+        correct50 = torch.eq(predicted50, labels).sum().float().item()
+        correct100 = torch.eq(predicted100, labels).sum().float().item()
 
-        return correct1,correct5,correct10,correct20
+        return correct1,correct5,correct10,correct20,correct50,correct100
