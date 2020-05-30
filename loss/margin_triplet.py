@@ -67,3 +67,34 @@ class MarginTripletLoss(torch.nn.Module):
                 losses[i] = torch.tensor(0)
         losses = torch.sum(losses)
         return loss / (2 * self.batch_size)
+    
+    def top_eval(self,zis,zjs):
+        representations = torch.cat([zjs, zis], dim=0)
+
+        similarity_matrix = self.similarity_function(representations, representations)
+
+        # filter out the scores from the positive samples
+        l_pos = torch.diag(similarity_matrix, self.batch_size)
+        r_pos = torch.diag(similarity_matrix, -self.batch_size)
+        positives = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1)
+
+        negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1)
+
+        labels = torch.zeros(2 * self.batch_size).to(self.device).long()
+        logits = torch.cat((positives, negatives), dim=1)
+        logits /= self.temperature
+        predicted1 = torch.argmax(logits, dim=1)
+        _,predicted5 = logits.topk(5,1,True,True)
+        _,predicted10 = logits.topk(10,1,True,True)
+        _,predicted20 = logits.topk(20,1,True,True)
+        _,predicted50 = logits.topk(50,1,True,True)
+        _,predicted100 = logits.topk(100,1,True,True)
+        correct1 = (predicted1 == labels).sum().item()
+        labels = labels.view(-1,1)
+        correct5 = torch.eq(predicted5, labels).sum().float().item()
+        correct10 = torch.eq(predicted10, labels).sum().float().item()
+        correct20 = torch.eq(predicted20, labels).sum().float().item()
+        correct50 = torch.eq(predicted50, labels).sum().float().item()
+        correct100 = torch.eq(predicted100, labels).sum().float().item()
+
+        return correct1,correct5,correct10,correct20,correct50,correct100
