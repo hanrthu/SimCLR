@@ -106,7 +106,7 @@ class SimCLR(object):
         train_loader, valid_loader, test_loader= self.dataset.get_data_loaders()
         model = ResNetSimCLR(**self.config["model"]).to(self.device)
         model = self._load_pre_trained_weights(model)
-        self.eval(test_loader)
+        self.eval(test_loader,model)
 
     def train(self):
 
@@ -206,18 +206,18 @@ class SimCLR(object):
         print(valid_loss)
         return valid_loss
 
-    def eval(self, test_loader):
+    def eval(self, test_loader,model):
         top1 = 0
         top5 = 0
         total = 0
 
         with torch.no_grad():
-            self.model.eval()
+            model.eval()
             for batch_x, batch_y in test_loader:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
 
-                l1 = self.model(batch_x)
-                l2 = self.model(batch_y)
+                l1 = model(batch_x)
+                l2 = model(batch_y)
 
                 top1 += self.top_1_step(l1,l2)
                 top5 += self.top_5_step(l1,l2)
@@ -228,5 +228,5 @@ class SimCLR(object):
         print("Top1 Accuracy: %d" %(top1_acc))
         print("Top5 Accuracy: %d" %(top5_acc))
 
-        self.model.train()
+        model.train()
         return final_acc
