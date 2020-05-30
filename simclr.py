@@ -215,8 +215,8 @@ class SimCLR(object):
         with torch.no_grad():
             model.eval()
             for (batch_x, batch_y),_ in test_loader:
-                print(batch_x.shape)
-                print(batch_y.shape)
+                # print(batch_x.shape)
+                # print(batch_y.shape)
                 batch_x, batch_y = batch_x.to(self.device), batch_y.to(self.device)
 
                 top1 += self.top_1_step(model,batch_x,batch_y,counter)
