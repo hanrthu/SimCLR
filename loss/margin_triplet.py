@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import random
 
 class MarginTripletLoss(torch.nn.Module):
     def __init__(self, device, batch_size, temperature, use_cosine_similarity,semihard):
@@ -25,6 +26,22 @@ class MarginTripletLoss(torch.nn.Module):
         mask = torch.from_numpy((diag + l1 + l2))
         mask = (1 - mask).type(torch.bool)
         return mask.to(self.device)
+
+    def _get_semi_hard_mask(self,similarity_matrix,margin,d_a_p):
+        zero = torch.zeros_like(similarity_matrix)
+        one = torch.ones_like(similarity_matrix)
+        mask = torch.where(similarity_matrix - d_a_p + margin > 0,one,zero)
+        mask = torch.where(similarity_matrix < d_a_p, mask,zero)
+        diag = np.eye(2 * self.batch_size)
+        l1 = np.eye((2 * self.batch_size), 2 * self.batch_size, k=-self.batch_size)
+        l2 = np.eye((2 * self.batch_size), 2 * self.batch_size, k=self.batch_size)
+        m = torch.from_numpy((diag + l1 + l2))
+        mask = torch.sub(mask,m)
+        zero = torch.zeros_like(mask)
+        mask = torch.where(mask < 0.0,zero,mask)
+        mask = mask.type(torch.bool)
+        return mask.to(self.device)
+        
 
     @staticmethod
     def _dot_simililarity(x, y):
@@ -56,14 +73,14 @@ class MarginTripletLoss(torch.nn.Module):
         negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1)
         #semi-hard negtive
         if self.semihard=='Yes':
-            d_a_n, indices = torch.max(negatives,1)
+            semis = similarity_matrix[self._get_semi_hard_mask(similarity_matrix,margin,d_a_p)].view(-1, 1)
+            i = np.arange(batch_size)
+            x = np.random.choice(semis.shape[0],semis.shape[0])
+            d_a_n = semis[i,x]
         #hard negtive
         else:
             d_a_n, indices = torch.max(negatives,1)
         losses = torch.sub(torch.add(d_a_n,margin),d_a_p)
-        # for i in range(2*self.batch_size):
-        #     if losses[i].item() < 0:
-        #         losses[i] = torch.tensor(0)
 
         zero = torch.zeros_like(losses)
         losses = torch.where(losses < 0.0, zero, losses)
