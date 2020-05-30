@@ -75,7 +75,7 @@ class SimCLR(object):
         loss = self.nt_xent_criterion(zis, zjs)
         return loss
 
-    def top_1_step(self, model, xis, xjs, n_iter):
+    def top_step(self, model, xis, xjs, n_iter):
         # get the representations and the projections
         ris, zis = model(xis)  # [N,C]
 
@@ -86,21 +86,8 @@ class SimCLR(object):
         zis = F.normalize(zis, dim=1)
         zjs = F.normalize(zjs, dim=1)
 
-        correct = self.nt_xent_criterion.top_1_eval(zis,zjs)
-        return correct
-    
-    def top_5_step(self, model, xis, xjs, n_iter):
-        ris, zis = model(xis)  # [N,C]
-
-        # get the representations and the projections
-        rjs, zjs = model(xjs)  # [N,C]
-
-        # normalize projection feature vectors
-        zis = F.normalize(zis, dim=1)
-        zjs = F.normalize(zjs, dim=1)
-
-        correct = self.nt_xent_criterion.top_5_eval(zis,zjs)
-        return correct
+        correct1,correct5,correct10,correct20 = self.nt_xent_criterion.top_eval(zis,zjs)
+        return correct1,correct5,correct10,correct20
         
     def test(self):
         train_loader, valid_loader, test_loader= self.dataset.get_data_loaders()
@@ -211,6 +198,8 @@ class SimCLR(object):
     def eval(self, test_loader,model):
         top1 = 0.0
         top5 = 0.0
+        top10 = 0.0
+        top20 = 0.0
         total = 0.0
         counter = 0.0
 
@@ -220,9 +209,12 @@ class SimCLR(object):
                 # print(batch_x.shape)
                 # print(batch_y.shape)
                 batch_x, batch_y = batch_x.to(self.device), batch_y.to(self.device)
+                tmp1,tmp5,tmp10,tmp20 = self.top_step(model,batch_x,batch_y,counter)
 
-                top1 += self.top_1_step(model,batch_x,batch_y,counter)
-                top5 += self.top_5_step(model,batch_x,batch_y,counter)
+                top1 += tmp1
+                top5 += tmp5
+                top10 += tmp15
+                tmp20 += tmp20
 
                 total += 2 * batch_x.size(0)
                 counter += 1
