@@ -227,7 +227,7 @@ class SimCLR(object):
 
         top1_acc = 100.0 * top1 / total
         top5_acc = 100.0 * top5 / total
-        print("Top1 Accuracy: %d %" %(top1_acc))
-        print("Top5 Accuracy: %d %" %(top5_acc))
+        print("Top1 Accuracy: %d \%" %(top1_acc))
+        print("Top5 Accuracy: %d \%" %(top5_acc))
 
         model.train()
