@@ -115,7 +115,7 @@ class SimCLR(object):
         model = ResNetSimCLR(**self.config["model"]).to(self.device)
         model = self._load_pre_trained_weights(model)
 
-        optimizer = torch.optim.Adam(model.parameters(), 3e-4, weight_decay=eval(self.config['weight_decay']))
+        optimizer = torch.optim.Adam(model.parameters(), 3e-3, weight_decay=eval(self.config['weight_decay']))
 
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=len(train_loader), eta_min=0,
                                                                last_epoch=-1)
@@ -133,8 +133,9 @@ class SimCLR(object):
         n_iter = 0
         valid_n_iter = 0
         best_valid_loss = np.inf
-
         for epoch_counter in range(self.config['epochs']):
+            train_loss = 0
+            counter = 0
             print("Epoch:",end=":")
             print(epoch_counter)
             for (xis, xjs), _ in train_loader:
@@ -143,7 +144,8 @@ class SimCLR(object):
                 xjs = xjs.to(self.device)
 
                 loss = self._step(model, xis, xjs, n_iter)
-
+                train_loss += loss
+                counter += 1
                 if n_iter % self.config['log_every_n_steps'] == 0:
                     self.writer.add_scalar('train_loss', loss, global_step=n_iter)
 
@@ -155,7 +157,7 @@ class SimCLR(object):
 
                 optimizer.step()
                 n_iter += 1
-            
+            print("TrainLoss:%f" %(train_loss/counter))
             self.eval(train_loader,model)
 
             # validate the model if requested
