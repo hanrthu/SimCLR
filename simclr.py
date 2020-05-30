@@ -233,5 +233,7 @@ class SimCLR(object):
         print("Top5 Accuracy: %f %%" %(top5_acc))
         print("Top10 Accuracy: %f %%" %(top10_acc))
         print("Top20 Accuracy: %f %%" %(top20_acc))
+        print("Top50 Accuracy: %f %%" %(top50_acc))
+        print("Top100 Accuracy: %f %%" %(top100_acc))
 
         model.train()
