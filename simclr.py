@@ -213,7 +213,7 @@ class SimCLR(object):
 
                 top1 += tmp1
                 top5 += tmp5
-                top10 += tmp15
+                top10 += tmp10
                 top20 += tmp20
 
                 total += 2 * batch_x.size(0)
