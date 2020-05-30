@@ -48,7 +48,7 @@ class MarginTripletLoss(torch.nn.Module):
         representations = torch.cat([zjs, zis], dim=0)
 
         similarity_matrix = self.similarity_function(representations, representations)
-
+        margin = torch.tensor(0.3)
         # filter out the scores from the positive samples
         l_pos = torch.diag(similarity_matrix, self.batch_size)
         r_pos = torch.diag(similarity_matrix, -self.batch_size)
@@ -56,11 +56,10 @@ class MarginTripletLoss(torch.nn.Module):
         negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1)
         #semi-hard negtive
         if self.semihard=='Yes':
-            d_a_n, indices = torch.min(negatives,1)
+            d_a_n, indices = torch.max(negatives,1)
         #hard negtive
         else:
-            d_a_n, indices = torch.min(negatives,1)
-        margin = torch.tensor(0.3)
+            d_a_n, indices = torch.max(negatives,1)
         losses = torch.sub(torch.add(d_a_n,margin),d_a_p)
         # for i in range(2*self.batch_size):
         #     if losses[i].item() < 0:
