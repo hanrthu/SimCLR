@@ -64,6 +64,6 @@ class NTLogisticLoss(torch.nn.Module):
         losses = torch.sub(torch.add(d_a_n,margin),d_a_p)
         for i in range(2*self.batch_size):
             if losses[i].item() < 0:
-                losses[i].item() = torch.tensor(0)
+                losses[i] = torch.tensor(0)
         losses = torch.sum(losses)
         return loss / (2 * self.batch_size)
