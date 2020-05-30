@@ -210,6 +210,7 @@ class SimCLR(object):
         top1 = 0
         top5 = 0
         total = 0
+        counter = 0
 
         with torch.no_grad():
             model.eval()
@@ -218,12 +219,11 @@ class SimCLR(object):
                 print(batch_y.shape)
                 batch_x, batch_y = batch_x.to(self.device), batch_y.to(self.device)
 
-                l1 = model(batch_x)
-                l2 = model(batch_y)
-
-                top1 += self.top_1_step(l1,l2)
-                top5 += self.top_5_step(l1,l2)
+                top1 += self.top_1_step(model,batch_x,batch_y,counter)
+                top5 += self.top_5_step(model,batch_x,batch_y,counter)
+                
                 total += 2 * batch_x.size(0)
+                counter += 1
 
         top1_acc = 100 * top1 / total
         top5_acc = 100 * top5 / total
