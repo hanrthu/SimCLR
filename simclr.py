@@ -155,6 +155,8 @@ class SimCLR(object):
 
                 optimizer.step()
                 n_iter += 1
+            
+            self.eval(test_loader,model)
 
             # validate the model if requested
             if epoch_counter % self.config['eval_every_n_epochs'] == 0:
@@ -171,8 +173,6 @@ class SimCLR(object):
             if epoch_counter >= 10:
                 scheduler.step()
             self.writer.add_scalar('cosine_lr_decay', scheduler.get_lr()[0], global_step=n_iter)
-
-        self.eval(test_loader)
 
     def _load_pre_trained_weights(self, model):
         try:
@@ -207,10 +207,10 @@ class SimCLR(object):
         return valid_loss
 
     def eval(self, test_loader,model):
-        top1 = 0
-        top5 = 0
-        total = 0
-        counter = 0
+        top1 = 0.0
+        top5 = 0.0
+        total = 0.0
+        counter = 0.0
 
         with torch.no_grad():
             model.eval()
@@ -225,10 +225,9 @@ class SimCLR(object):
                 total += 2 * batch_x.size(0)
                 counter += 1
 
-        top1_acc = 100 * top1 / total
-        top5_acc = 100 * top5 / total
-        print("Top1 Accuracy: %d" %(top1_acc))
-        print("Top5 Accuracy: %d" %(top5_acc))
+        top1_acc = 100.0 * top1 / total
+        top5_acc = 100.0 * top5 / total
+        print("Top1 Accuracy: %d %" %(top1_acc))
+        print("Top5 Accuracy: %d %" %(top5_acc))
 
         model.train()
-        return final_acc
