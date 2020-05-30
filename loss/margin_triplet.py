@@ -62,9 +62,11 @@ class MarginTripletLoss(torch.nn.Module):
             d_a_n, indices = torch.min(negatives,1)
         margin = torch.tensor(0.3)
         losses = torch.sub(torch.add(d_a_n,margin),d_a_p)
-        for i in range(2*self.batch_size):
-            if losses[i].item() < 0:
-                losses[i] = torch.tensor(0)
+        # for i in range(2*self.batch_size):
+        #     if losses[i].item() < 0:
+        #         losses[i] = torch.tensor(0)
+
+        losses = torch.where(losses < 0.0, zero, losses))
         losses = torch.sum(losses)
         return loss / (2 * self.batch_size)
     
