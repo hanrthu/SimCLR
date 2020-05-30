@@ -176,7 +176,7 @@ class SimCLR(object):
 
     def _load_pre_trained_weights(self, model):
         try:
-            checkpoints_folder = os.path.join('./runs', self.config['fine_tune_from'], 'checkpoints')
+            checkpoints_folder = os.path.join('../runs', self.config['fine_tune_from'], 'checkpoints')
             state_dict = torch.load(os.path.join(checkpoints_folder, 'model.pth'))
             model.load_state_dict(state_dict)
             print("Loaded pre-trained model with success.")
