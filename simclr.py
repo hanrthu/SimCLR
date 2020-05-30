@@ -86,8 +86,8 @@ class SimCLR(object):
         zis = F.normalize(zis, dim=1)
         zjs = F.normalize(zjs, dim=1)
 
-        correct,total = self.nt_xent_criterion.top_1_eval(zis,zjs)
-        return correct,total
+        correct = self.nt_xent_criterion.top_1_eval(zis,zjs)
+        return correct
     
     def top_5_step(self, model, xis, xjs, n_iter):
         ris, zis = model(xis)  # [N,C]
@@ -99,8 +99,8 @@ class SimCLR(object):
         zis = F.normalize(zis, dim=1)
         zjs = F.normalize(zjs, dim=1)
 
-        correct,total = self.nt_xent_criterion.top_5_eval(zis,zjs)
-        return correct,total
+        correct = self.nt_xent_criterion.top_5_eval(zis,zjs)
+        return correct
         
     def test(self):
         train_loader, valid_loader, test_loader= self.dataset.get_data_loaders()
@@ -221,7 +221,7 @@ class SimCLR(object):
 
                 top1 += self.top_1_step(model,batch_x,batch_y,counter)
                 top5 += self.top_5_step(model,batch_x,batch_y,counter)
-                
+
                 total += 2 * batch_x.size(0)
                 counter += 1
 
