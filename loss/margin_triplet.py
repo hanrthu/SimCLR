@@ -66,6 +66,7 @@ class MarginTripletLoss(torch.nn.Module):
         #     if losses[i].item() < 0:
         #         losses[i] = torch.tensor(0)
 
+        zero = torch.zeros_like(losses)
         losses = torch.where(losses < 0.0, zero, losses)
         losses = torch.sum(losses)
         return loss / (2 * self.batch_size)
