@@ -83,8 +83,7 @@ class NTXentLoss(torch.nn.Module):
         logits /= self.temperature
         predicted = torch.argmax(logits, dim=1)
         correct = (predicted == labels).sum().item()
-        total = 2*self.batch_size
-        return correct,total
+        return correct
 
     def top_5_eval(self,zis,zjs):
         representations = torch.cat([zjs, zis], dim=0)
@@ -105,5 +104,4 @@ class NTXentLoss(torch.nn.Module):
         labels = labels.view(-1,1)
         # predicted = torch.argmax(logits, dim=1)
         correct = torch.eq(predicted, labels).sum().float().item()
-        total = 2*self.batch_size
-        return correct,total
+        return correct
