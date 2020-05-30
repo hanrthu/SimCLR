@@ -156,7 +156,7 @@ class SimCLR(object):
                 optimizer.step()
                 n_iter += 1
             
-            self.eval(test_loader,model)
+            self.eval(train_loader,model)
 
             # validate the model if requested
             if epoch_counter % self.config['eval_every_n_epochs'] == 0:
