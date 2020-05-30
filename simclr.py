@@ -214,15 +214,15 @@ class SimCLR(object):
                 top1 += tmp1
                 top5 += tmp5
                 top10 += tmp15
-                tmp20 += tmp20
+                top20 += tmp20
 
                 total += 2 * batch_x.size(0)
                 counter += 1
 
         top1_acc = 100.0 * top1 / total
         top5_acc = 100.0 * top5 / total
-        top10_acc = 100 * top10 /total
-        top20_acc = 100 * top20 / total
+        top10_acc = 100.0 * top10 /total
+        top20_acc = 100.0 * top20 / total
         print("Top1 Accuracy: %f %%" %(top1_acc))
         print("Top5 Accuracy: %f %%" %(top5_acc))
         print("Top10 Accuracy: %f %%" %(top10_acc))

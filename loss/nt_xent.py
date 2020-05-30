@@ -89,6 +89,6 @@ class NTXentLoss(torch.nn.Module):
         labels = labels.view(-1,1)
         correct5 = torch.eq(predicted5, labels).sum().float().item()
         correct10 = torch.eq(predicted10, labels).sum().float().item()
-        correc20 = torch.eq(predicted20, labels).sum().float().item()
+        correct20 = torch.eq(predicted20, labels).sum().float().item()
 
         return correct1,correct5,correct10,correct20
