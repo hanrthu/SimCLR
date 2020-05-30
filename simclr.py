@@ -106,7 +106,7 @@ class SimCLR(object):
         train_loader, valid_loader, test_loader= self.dataset.get_data_loaders()
         model = ResNetSimCLR(**self.config["model"]).to(self.device)
         model = self._load_pre_trained_weights(model)
-        self.eval(valid_loader,model)
+        self.eval(test_loader,model)
 
     def train(self):
 
@@ -213,7 +213,7 @@ class SimCLR(object):
 
         with torch.no_grad():
             model.eval()
-            for batch_x, batch_y in test_loader:
+            for (batch_x, batch_y),_ in test_loader:
                 print(batch_x.shape)
                 print(batch_y.shape)
                 batch_x, batch_y = batch_x.to(self.device), batch_y.to(self.device)
