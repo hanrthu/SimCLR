@@ -18,7 +18,7 @@ dataset:
   valid_size: 0.05
 
 loss:
-  semi_hard : hard
+  semi_hard : Yes
   mode : margin-triplet
   temperature: 0.5
   use_cosine_similarity: True
