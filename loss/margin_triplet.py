@@ -69,7 +69,7 @@ class MarginTripletLoss(torch.nn.Module):
         zero = torch.zeros_like(losses)
         losses = torch.where(losses < 0.0, zero, losses)
         losses = torch.sum(losses)
-        return loss / (2 * self.batch_size)
+        return losses / (2 * self.batch_size)
     
     def top_eval(self,zis,zjs):
         representations = torch.cat([zjs, zis], dim=0)
