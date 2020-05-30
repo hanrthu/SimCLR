@@ -55,7 +55,7 @@ class MarginTripletLoss(torch.nn.Module):
         d_a_p = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1)
         negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1)
         #semi-hard negtive
-        if semihard=='Yes':
+        if self.semihard=='Yes':
             d_a_n, indices = torch.min(negatives,1)
         #hard negtive
         else:
