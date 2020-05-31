@@ -5,6 +5,7 @@ import torchvision.transforms as transforms
 from torchvision import datasets
 from models.resnet_simclr import ResNetSimCLR
 import numpy as np
+from sklearn import preprocessing
 import os
 
 # device = 'cuda' if torch.cuda.is_available() else 'cpu'
