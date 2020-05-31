@@ -1,7 +1,7 @@
 batch_size: 1024
 epochs: 40
 eval_every_n_epochs: 1
-fine_tune_from: margin_semi_lr0.5
+fine_tune_from: margin_semi_lr0.3
 log_every_n_steps: 50
 weight_decay: 10e-6
 fp16_precision: False
