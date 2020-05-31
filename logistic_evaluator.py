@@ -141,7 +141,7 @@ class LogiticRegressionEvaluator(object):
         logits = self.log_regression(batch_x)
 
         loss = criterion(logits, batch_y)
-        print("Loss %f" %(loss))
+        # print("Loss %f" %(loss))
         loss.backward()
         optimizer.step()
 
