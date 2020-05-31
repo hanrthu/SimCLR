@@ -14,10 +14,10 @@ def main():
     if config['mode'] == 'test':
         simclr.test()
     if config['mode'] == 'eval':
-        logistic = ResNetFeatureExtractor()
+        logistic = ResNetFeatureExtractor(config)
         X_train_feature, y_train, X_test_feature, y_test = logistic.get_resnet_features()
-        classifier = LogiticRegressionEvaluator(X_train_feature, y_train, X_test_feature, y_test)
-        classifier.train()
+        classifier = LogiticRegressionEvaluator(256,10)
+        classifier.train(X_train_feature, y_train, X_test_feature, y_test)
 
 
 

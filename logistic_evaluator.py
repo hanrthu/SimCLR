@@ -25,9 +25,10 @@ def get_cifar10_data_loaders(download, shuffle=False, batch_size=1024):
 
 
 class ResNetFeatureExtractor(object):
-  def __init__(self):
+  def __init__(self,config):
     self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    self.model = _load_resnet_model(self.device)
+    self.config = config
+    self.model = _load_resnet_model(self.device,self.config)
 
   def _inference(self, loader):
     feature_vector = []
@@ -54,7 +55,7 @@ class ResNetFeatureExtractor(object):
     return X_train_feature, y_train, X_test_feature, y_test
 
 
-def _load_resnet_model(device):
+def _load_resnet_model(device,config):
   # Load the neural net module
   model = ResNetSimCLR(**config['model'])
   model.eval()

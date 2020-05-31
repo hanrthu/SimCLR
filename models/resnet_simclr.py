@@ -14,7 +14,8 @@ class ResNetSimCLR(nn.Module):
         num_ftrs = resnet.fc.in_features
 
         self.features = nn.Sequential(*list(resnet.children())[:-1])
-
+        print("Features")
+        print(num_ftrs)
         # projection MLP
         self.l1 = nn.Linear(num_ftrs, num_ftrs)
         self.l2 = nn.Linear(num_ftrs, out_dim)
