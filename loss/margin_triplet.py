@@ -101,7 +101,6 @@ class MarginTripletLoss(torch.nn.Module):
 
         labels = torch.zeros(2 * self.batch_size).to(self.device).long()
         logits = torch.cat((positives, negatives), dim=1)
-        logits /= self.temperature
         predicted1 = torch.argmax(logits, dim=1)
         _,predicted5 = logits.topk(5,1,True,True)
         _,predicted10 = logits.topk(10,1,True,True)
