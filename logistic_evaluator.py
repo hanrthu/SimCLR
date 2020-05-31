@@ -1,13 +1,14 @@
+import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from torchvision import datasets
 from models.resnet_simclr import ResNetSimCLR
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-print("Using device:", device)
-checkpoints_folder = os.path.join(folder_name, 'checkpoints')
-config = yaml.load(open(os.path.join(checkpoints_folder, "config.yaml"), "r"))
+# device = 'cuda' if torch.cuda.is_available() else 'cpu'
+# print("Using device:", device)
+# checkpoints_folder = os.path.join(folder_name, 'checkpoints')
+# config = yaml.load(open(os.path.join(checkpoints_folder, "config.yaml"), "r"))
 
 def get_cifar10_data_loaders(download, shuffle=False, batch_size=1024):
   train_dataset = datasets.CIFAR10('../data', download=True,train=True,
@@ -25,14 +26,15 @@ def get_cifar10_data_loaders(download, shuffle=False, batch_size=1024):
 
 class ResNetFeatureExtractor(object):
   def __init__(self):
-    self.model = _load_resnet_model()
+    self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    self.model = _load_resnet_model(self.device)
 
   def _inference(self, loader):
     feature_vector = []
     labels_vector = []
     for batch_x, batch_y in loader:
 
-      batch_x = batch_x.to(device)
+      batch_x = batch_x.to(self.device)
       labels_vector.extend(batch_y)
 
       features, _ = self.model(batch_x)
@@ -52,7 +54,7 @@ class ResNetFeatureExtractor(object):
     return X_train_feature, y_train, X_test_feature, y_test
 
 
-def _load_resnet_model():
+def _load_resnet_model(device):
   # Load the neural net module
   model = ResNetSimCLR(**config['model'])
   model.eval()
@@ -64,7 +66,8 @@ def _load_resnet_model():
 
 class LogiticRegressionEvaluator(object):
   def __init__(self, n_features, n_classes):
-    self.log_regression = LogisticRegression(n_features, n_classes).to(device)
+    self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    self.log_regression = LogisticRegression(n_features, n_classes).to(self.device)
     self.scaler = preprocessing.StandardScaler()
 
   def _normalize_dataset(self, X_train, X_test):
@@ -89,7 +92,7 @@ class LogiticRegressionEvaluator(object):
     with torch.no_grad():
       self.log_regression.eval()
       for batch_x, batch_y in test_loader:
-          batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+          batch_x, batch_y = batch_x.to(self.device), batch_y.to(self.device)
           logits = self.log_regression(batch_x)
 
           predicted = torch.argmax(logits, dim=1)
@@ -127,7 +130,7 @@ class LogiticRegressionEvaluator(object):
       
       for batch_x, batch_y in train_loader:
 
-        batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+        batch_x, batch_y = batch_x.to(self.device), batch_y.to(self.device)
 
         optimizer.zero_grad()
 

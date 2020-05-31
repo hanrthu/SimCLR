@@ -14,6 +14,8 @@ def main():
     if config['mode'] == 'test':
         simclr.test()
     if config['mode'] == 'eval':
+        device = 'cuda' if torch.cuda.is_available() else 'cpu' 
+        print("Using device:", device)
         logistic = ResNetFeatureExtractor()
         X_train_feature, y_train, X_test_feature, y_test = logistic.get_resnet_features()
         classifier = LogiticRegressionEvaluator(X_train_feature, y_train, X_test_feature, y_test)
