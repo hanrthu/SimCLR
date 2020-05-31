@@ -60,7 +60,7 @@ def _load_resnet_model(device,config):
   # Load the neural net module
   model = ResNetSimCLR(**config['model'])
   model.eval()
-  checkpoints_folder = os.path.join('../runs', self.config['fine_tune_from'], 'checkpoints')
+  checkpoints_folder = os.path.join('../runs', config['fine_tune_from'], 'checkpoints')
   state_dict = torch.load(os.path.join(checkpoints_folder, 'model.pth'))
   model.load_state_dict(state_dict)
   model = model.to(device)
