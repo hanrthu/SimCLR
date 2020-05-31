@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from torchvision import datasets
 from models.resnet_simclr import ResNetSimCLR
+import os
 
 # device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # print("Using device:", device)
