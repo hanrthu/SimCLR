@@ -56,7 +56,8 @@ class NTLogisticLoss(torch.nn.Module):
         # v shape: (N, 2N)
         print(x.shape)
         print(y.shape)
-        v = self._cosine_similarity(x.unsqueeze(1), y.unsqueeze(0))
+        # v = self._cosine_similarity(x.unsqueeze(1), y.unsqueeze(0))
+        v = torch.cosine_similarity(x,y,dim=1)
         print(v.shape)
         return v
 
