@@ -5,7 +5,7 @@ fine_tune_from: resnet50
 log_every_n_steps: 50
 weight_decay: 10e-6
 fp16_precision: False
-mode: eval
+mode: train
 
 model:
   out_dim: 256
