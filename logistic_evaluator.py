@@ -125,7 +125,7 @@ class LogiticRegressionEvaluator(object):
 
     weight_decay = self._sample_weight_decay()
 
-    optimizer = torch.optim.Adam(self.log_regression.parameters(), 3e-4, weight_decay=0.0001)
+    optimizer = torch.optim.Adam(self.log_regression.parameters(), 1e-3, weight_decay=0.0001)
     criterion = torch.nn.CrossEntropyLoss()
 
     best_accuracy = 0
