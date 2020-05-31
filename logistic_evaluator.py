@@ -2,31 +2,30 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from torchvision import datasets
+from models.resnet_simclr import ResNetSimCLR
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print("Using device:", device)
 checkpoints_folder = os.path.join(folder_name, 'checkpoints')
 config = yaml.load(open(os.path.join(checkpoints_folder, "config.yaml"), "r"))
 
-def get_stl10_data_loaders(download, shuffle=False, batch_size=128):
-  train_dataset = datasets.STL10('./data', split='train', download=download,
-                                  transform=transforms.ToTensor())
-
+def get_cifar10_data_loaders(download, shuffle=False, batch_size=1024):
+  train_dataset = datasets.CIFAR10('../data', download=True,train=True,
+                                       transform=transforms.ToTensor())
   train_loader = DataLoader(train_dataset, batch_size=batch_size,
-                            num_workers=0, drop_last=False, shuffle=shuffle)
-  
-  test_dataset = datasets.STL10('./data', split='test', download=download,
-                                  transform=transforms.ToTensor())
+                            num_workers=8, drop_last=False, shuffle=shuffle)
 
+  test_dataset = datasets.CIFAR10('../data', download=True,train=False,
+                                       transform=transforms.ToTensor())
+        
   test_loader = DataLoader(test_dataset, batch_size=batch_size,
-                            num_workers=0, drop_last=False, shuffle=shuffle)
+                            num_workers=8, drop_last=False, shuffle=shuffle)
   return train_loader, test_loader
 
 
 class ResNetFeatureExtractor(object):
-  def __init__(self, checkpoints_folder):
-    self.checkpoints_folder = checkpoints_folder
-    self.model = _load_resnet_model(checkpoints_folder)
+  def __init__(self):
+    self.model = _load_resnet_model()
 
   def _inference(self, loader):
     feature_vector = []
@@ -46,23 +45,19 @@ class ResNetFeatureExtractor(object):
     return feature_vector, labels_vector
 
   def get_resnet_features(self):
-    train_loader, test_loader = get_stl10_data_loaders(download=True)
+    train_loader, test_loader = get_cifar10_data_loaders(download=True)
     X_train_feature, y_train = self._inference(train_loader)
     X_test_feature, y_test = self._inference(test_loader)
 
     return X_train_feature, y_train, X_test_feature, y_test
 
 
-def _load_resnet_model(checkpoints_folder):
+def _load_resnet_model():
   # Load the neural net module
-  spec = importlib.util.spec_from_file_location("model", os.path.join(checkpoints_folder, 'resnet_simclr.py'))
-  resnet_module = importlib.util.module_from_spec(spec)
-  spec.loader.exec_module(resnet_module)
-
-  model = resnet_module.ResNetSimCLR(**config['model'])
+  model = ResNetSimCLR(**config['model'])
   model.eval()
-
-  state_dict = torch.load(os.path.join(checkpoints_folder, 'model.pth'), map_location=torch.device('cpu'))
+  checkpoints_folder = os.path.join('../runs', self.config['fine_tune_from'], 'checkpoints')
+  state_dict = torch.load(os.path.join(checkpoints_folder, 'model.pth'))
   model.load_state_dict(state_dict)
   model = model.to(device)
   return model
@@ -102,6 +97,7 @@ class LogiticRegressionEvaluator(object):
           correct += (predicted == batch_y).sum().item()
 
       final_acc = 100 * correct / total
+      print("Final Accuracy: %f" %(final_acc))
       self.log_regression.train()
       return final_acc
 
@@ -110,10 +106,10 @@ class LogiticRegressionEvaluator(object):
     X_train, X_test = self._normalize_dataset(X_train, X_test)
 
     train = torch.utils.data.TensorDataset(torch.from_numpy(X_train), torch.from_numpy(y_train).type(torch.long))
-    train_loader = torch.utils.data.DataLoader(train, batch_size=396, shuffle=False)
+    train_loader = torch.utils.data.DataLoader(train, batch_size=10024, shuffle=False)
 
     test = torch.utils.data.TensorDataset(torch.from_numpy(X_test), torch.from_numpy(y_test).type(torch.long))
-    test_loader = torch.utils.data.DataLoader(test, batch_size=512, shuffle=False)
+    test_loader = torch.utils.data.DataLoader(test, batch_size=1024, shuffle=False)
     return train_loader, test_loader
 
   def train(self, X_train, y_train, X_test, y_test):
@@ -143,6 +139,8 @@ class LogiticRegressionEvaluator(object):
         optimizer.step()
 
       epoch_acc = self.eval(test_loader)
+      print("Accuracy: %f",epoch_acc)
+      print(epoch_acc)
       
       if epoch_acc > best_accuracy:
         print("Saving new model with accuracy {}".format(epoch_acc))
