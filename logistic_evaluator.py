@@ -113,7 +113,7 @@ class LogiticRegressionEvaluator(object):
     X_train, X_test = self._normalize_dataset(X_train, X_test)
 
     train = torch.utils.data.TensorDataset(torch.from_numpy(X_train), torch.from_numpy(y_train).type(torch.long))
-    train_loader = torch.utils.data.DataLoader(train, batch_size=10024, shuffle=False)
+    train_loader = torch.utils.data.DataLoader(train, batch_size=1024, shuffle=False)
 
     test = torch.utils.data.TensorDataset(torch.from_numpy(X_test), torch.from_numpy(y_test).type(torch.long))
     test_loader = torch.utils.data.DataLoader(test, batch_size=1024, shuffle=False)
@@ -141,13 +141,12 @@ class LogiticRegressionEvaluator(object):
         logits = self.log_regression(batch_x)
 
         loss = criterion(logits, batch_y)
-
+        print("Loss %f" %(loss))
         loss.backward()
         optimizer.step()
 
       epoch_acc = self.eval(test_loader)
-      print("Accuracy: %f",epoch_acc)
-      print(epoch_acc)
+      print("Accuracy: %f" %(epoch_acc))
       
       if epoch_acc > best_accuracy:
         print("Saving new model with accuracy {}".format(epoch_acc))
