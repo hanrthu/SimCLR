@@ -81,8 +81,6 @@ class NTLogisticLoss(torch.nn.Module):
         #hard negtive
         else:
             d_a_n, indices = torch.max(negatives,1)
-        logits = torch.cat((d_a_p, d_a_n), dim=1)
-        logits /= self.temperature
 
         losses = - (torch.log(torch.sigmoid(d_a_p/self.temperature)) + torch.log(torch.sigmoid(-d_a_n/self.temperature)))
         losses = torch.sum(losses)
