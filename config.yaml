@@ -19,6 +19,6 @@ dataset:
 
 loss:
   semi_hard : Yes
-  mode : nt-xent
+  mode : margin-triplet
   temperature: 0.5
   use_cosine_similarity: True
