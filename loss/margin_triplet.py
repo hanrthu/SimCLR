@@ -66,7 +66,7 @@ class MarginTripletLoss(torch.nn.Module):
         representations = torch.cat([zjs, zis], dim=0)
 
         similarity_matrix = self.similarity_function(representations, representations)
-        margin = torch.tensor(0.4)
+        margin = torch.tensor(0.8)
         # filter out the scores from the positive samples
         l_pos = torch.diag(similarity_matrix, self.batch_size)
         r_pos = torch.diag(similarity_matrix, -self.batch_size)
