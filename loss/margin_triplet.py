@@ -81,6 +81,7 @@ class MarginTripletLoss(torch.nn.Module):
         #hard negtive
         else:
             d_a_n, indices = torch.max(negatives,1)
+        margin = 0.4 * torch.ones_like(d_a_n)
         losses = torch.add(d_a_n,margin)-d_a_p
 
         zero = torch.zeros_like(losses)
